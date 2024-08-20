@@ -90,7 +90,7 @@ cd docker/local-test-zkevm-contracts
 git checkout v6.0.0-rc.1-fork.9
 ```
 
-Open the file `contracts/mocks/VerifierRollupHelperMock.sol` and make a silly change:
+Open the file `docker/local-test-zkevm-contracts/contracts/mocks/VerifierRollupHelperMock.sol` and make a silly change:
 
 ```diff
 diff --git a/contracts/mocks/VerifierRollupHelperMock.sol b/contracts/mocks/VerifierRollupHelperMock.sol
