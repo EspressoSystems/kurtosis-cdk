@@ -70,7 +70,13 @@ Exit the attached shell when you're done examining the `contracts-001` container
 exit
 ```
 
-Let's observe that proofs are passing verification as expected. Use your preferred method to view the logs for the container `zkevm-agglayer-001`. You should see logs like
+Let's observe that proofs are passing verification as expected. Use your preferred method to view the logs for the container `zkevm-agglayer-001`. For example, you could use the Docker Desktop graphical interface, or you could follow in a terminal via
+
+```bash
+kurtosis service logs cdk-v1 zkevm-agglayer-001 --follow
+```
+
+You should see logs like
 
 ```
 2024-08-19 15:57:01   2024-08-19T19:57:01.917737Z  INFO agglayer_node::rpc: Successfully settled transaction 0x1935…95d1 => receipt TransactionReceipt { ... }
