@@ -17,14 +17,21 @@ This document draws from the following resources:
 
 # Set up your system
 
-Follow the instructions at [Polygon CDK Kurtosis Package](../README.md) up to the terminal commands
+Set up your system as per instructions at [Polygon CDK Kurtosis Package](../README.md):
+
+- Install Docker and Kurtosis.
+- Run `./scripts/tool_check.sh`.
+
+If you get an error about an incorrect version of Kurtosis then install the correct version as described in [Kurtosis documentation](https://docs.kurtosis.com/install-historical/).
+
+Spin up a Polygon CDK devnet on your local machine. The process should complete within 10 minutes.
 
 ```bash
 kurtosis clean --all
 kurtosis run --enclave cdk-v1 --args-file params.yml .
 ```
 
-These commands will spin up a Polygon CDK devnet on your local machine. The process should complete within 10 minutes. Feel free to follow subsequent instructions in that document to play with your devnet.
+Feel free to follow [subsequent instructions](../README.md) to play with your devnet.
 
 Let's take a look at the Solidity code we want to change. Attach a shell to `contracts-001` container:
 
