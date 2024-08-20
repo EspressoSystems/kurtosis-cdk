@@ -96,6 +96,8 @@ Clone the repo [`zkevm-contracts`](https://github.com/0xPolygonHermez/zkevm-cont
 git clone git@github.com:0xPolygonHermez/zkevm-contracts.git docker/local-test-zkevm-contracts
 ```
 
+Optional: add `docker/local-test-zkevm-contracts` to your `.gitignore` file in repo `kurtosis-cdk` to suppress git messages about the repo you just cloned.
+
 We don't want any nasty surprises, so let's checkout the version of this repo that's currently used in `kurtosis-cdk`:
 
 ```bash
