@@ -20,9 +20,6 @@ This document draws from the following resources:
 Set up your system as per instructions at [Polygon CDK Kurtosis Package](../README.md):
 
 - Install Docker and Kurtosis.
-- Run `./scripts/tool_check.sh`.
-
-If you get an error about an incorrect version of Kurtosis then install the correct version as described in [Kurtosis documentation](https://docs.kurtosis.com/install-historical/).
 
 Spin up a Polygon CDK devnet on your local machine. The process should complete within 10 minutes.
 
@@ -102,24 +99,26 @@ We don't want any nasty surprises, so let's checkout the version of this repo th
 
 ```bash
 cd docker/local-test-zkevm-contracts
-git checkout v6.0.0-rc.1-fork.9
+git checkout v9.0.0-rc.6
 ```
 
 Open the file `docker/local-test-zkevm-contracts/contracts/mocks/VerifierRollupHelperMock.sol` and make a silly change:
 
 ```diff
 diff --git a/contracts/mocks/VerifierRollupHelperMock.sol b/contracts/mocks/VerifierRollupHelperMock.sol
-index 85e6b91..20e51c4 100644
+index 4544d6ef..56e95fa1 100644
 --- a/contracts/mocks/VerifierRollupHelperMock.sol
 +++ b/contracts/mocks/VerifierRollupHelperMock.sol
-@@ -9,6 +9,6 @@ contract VerifierRollupHelperMock is IVerifierRollup {
+@@ -10,7 +10,7 @@ contract VerifierRollupHelperMock is IVerifierRollup, ISP1Verifier {
          bytes32[24] calldata proof,
          uint256[1] memory pubSignals
      ) public pure override returns (bool) {
 -        return true;
 +        return false;
      }
- }
+ 
+     // SP1 interface
+
 ```
 
 This change causes the function `verifyProof` to reject any proof it's given.
@@ -134,22 +133,24 @@ Open the file `docker/zkevm-contracts.Dockerfile` and make the following edits:
 
 ```diff
 diff --git a/docker/zkevm-contracts.Dockerfile b/docker/zkevm-contracts.Dockerfile
-index 1a18e9c..531f667 100644
+index 53dfede..07f6efe 100644
 --- a/docker/zkevm-contracts.Dockerfile
 +++ b/docker/zkevm-contracts.Dockerfile
-@@ -12,10 +12,13 @@ LABEL description="Helper image to deploy zkevm contracts"
+@@ -1,4 +1,4 @@
+-FROM golang:1.22 AS polycli-builder
++FROM golang:1.23.0 AS polycli-builder
+ ARG POLYCLI_VERSION
+ WORKDIR /opt/polygon-cli
+ RUN git clone --branch ${POLYCLI_VERSION} https://github.com/maticnetwork/polygon-cli.git . \
+@@ -12,9 +12,8 @@ LABEL description="Helper image to deploy zkevm contracts"
  # STEP 1: Download zkevm contracts dependencies and compile contracts.
  ARG ZKEVM_CONTRACTS_BRANCH
  WORKDIR /opt/zkevm-contracts
-+
-+# TEMPORARY: clone from my local storage instead of github.
+-RUN git clone https://github.com/0xPolygonHermez/zkevm-contracts . \
+-  && git checkout ${ZKEVM_CONTRACTS_BRANCH} \
+-  && npm install --global npm@10.9.0 \
 +COPY local-test-zkevm-contracts .
-+
- # FIX: `npm install` randomly fails with ECONNRESET and ETIMEDOUT errors by installing npm>=10.5.1.
- # https://github.com/npm/cli/releases/tag/v10.5.1
--RUN git clone --branch ${ZKEVM_CONTRACTS_BRANCH} https://github.com/0xPolygonHermez/zkevm-contracts . \
--  && npm install --global npm@10.6.0 \
-+RUN npm install --global npm@10.6.0 \
++RUN npm install --global npm@10.9.0 \
    && npm install \
    && npx hardhat compile
 ```
@@ -161,8 +162,8 @@ Next let's rebuild our edited docker image `zkevm-contracts`. Open a terminal in
 ```bash
 cd docker
 docker build . \
- --tag local/zkevm-contracts:v6.0.0-rc.1-fork.9 \
- --build-arg ZKEVM_CONTRACTS_BRANCH=v6.0.0-rc.1-fork.9 \
+ --tag local/zkevm-contracts:v9.0.0-rc.6-pp-fork.12 \
+ --build-arg ZKEVM_CONTRACTS_BRANCH=v9.0.0-rc.6 \
  --build-arg POLYCLI_VERSION=main \
 --build-arg FOUNDRY_VERSION=nightly \
  --file zkevm-contracts.Dockerfile
@@ -177,30 +178,30 @@ docker images --filter "reference=local/zkevm-contracts"
 should produce output like
 
 ```
-REPOSITORY              TAG                    IMAGE ID       CREATED          SIZE
-local/zkevm-contracts   v6.0.0-rc.1-fork.9     fbd050369e61   22 minutes ago   2.37GB
+REPOSITORY              TAG           IMAGE ID       CREATED          SIZE
+local/zkevm-contracts   v9.0.0-rc.6   69c35e263281   57 seconds ago   2.8GB
 ```
 
 # Spin up a devnet with your new docker image
 
 Let's spin up a new Polygon CDK devnet with your edited docker image `zkevm-contracts`.
 
-Point your devnet to your local docker image. Open the file `params.yml` and change `leovct/zkevm-contracts` to `local/zkevm-contracts`:
+Point your devnet to your local docker image. Edit `input_parser.star` as follows:
 
 ```diff
-diff --git a/params.yml b/params.yml
-index 5293da7..5e451b6 100644
---- a/params.yml
-+++ b/params.yml
-@@ -55,7 +55,7 @@ args:
-   zkevm_da_image: 0xpolygon/cdk-data-availability:0.0.7
-   # zkevm_da_image: 0xpolygon/cdk-data-availability:0.0.6
-
--  zkevm_contracts_image: leovct/zkevm-contracts:v6.0.0-rc.1-fork.9
-+  zkevm_contracts_image: local/zkevm-contracts:v6.0.0-rc.1-fork.9
-
-   # agglayer_image: 0xpolygon/agglayer:0.1.3
-   agglayer_image: ghcr.io/agglayer/agglayer-rs:main
+diff --git a/input_parser.star b/input_parser.star
+index 780e9f9..9f17385 100644
+--- a/input_parser.star
++++ b/input_parser.star
+@@ -47,7 +47,7 @@ DEFAULT_IMAGES = {
+     "zkevm_bridge_proxy_image": "haproxy:3.1-bookworm",  # https://hub.docker.com/_/haproxy/tags
+     "zkevm_bridge_service_image": "hermeznetwork/zkevm-bridge-service:v0.6.0-RC10",  # https://hub.docker.com/r/hermeznetwork/zkevm-bridge-service/tags
+     "zkevm_bridge_ui_image": "leovct/zkevm-bridge-ui:multi-network",  # https://hub.docker.com/r/leovct/zkevm-bridge-ui/tags
+-    "zkevm_contracts_image": "leovct/zkevm-contracts:v9.0.0-rc.6-pp-fork.12",  # https://hub.docker.com/repository/docker/leovct/zkevm-contracts/tags
++    "zkevm_contracts_image": "local/zkevm-contracts:v9.0.0-rc.6-pp-fork.12",  # https://hub.docker.com/repository/docker/leovct/zkevm-contracts/tags
+     "zkevm_da_image": "0xpolygon/cdk-data-availability:0.0.11",  # https://hub.docker.com/r/0xpolygon/cdk-data-availability/tags
+     "zkevm_node_image": "hermeznetwork/zkevm-node:v0.7.3",  # https://hub.docker.com/r/hermeznetwork/zkevm-node/tags
+     "zkevm_pool_manager_image": "hermeznetwork/zkevm-pool-manager:v0.1.2",  # https://hub.docker.com/r/hermeznetwork/zkevm-pool-manager/tags
 ```
 
 Optional: by default, your devnet disables fancy dashboards. If you want to view your devnet from a fancy dashboard such as Grafana then open the file `params.yml` and ensure that `args.additional_services` includes `"prometheus_grafana"`.
@@ -208,7 +209,7 @@ Optional: by default, your devnet disables fancy dashboards. If you want to view
 Spin up your devnet! Just as before, move to the root directory of the repo `kurtosis-cdk` and run
 
 ```bash
-kurtosis run --enclave cdk-v1 --args-file params.yml .
+kurtosis run --enclave cdk-v1 .
 ```
 
 Let's verify that our edits to the Solidity code are live on this devnet. Just as before, attach a shell to `contracts-001` container and then peek at the Solidity code for `verifyProof`:
