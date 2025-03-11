@@ -47,7 +47,7 @@ DEFAULT_IMAGES = {
     "zkevm_bridge_proxy_image": "haproxy:3.1-bookworm",  # https://hub.docker.com/_/haproxy/tags
     "zkevm_bridge_service_image": "hermeznetwork/zkevm-bridge-service:v0.6.0-RC10",  # https://hub.docker.com/r/hermeznetwork/zkevm-bridge-service/tags
     "zkevm_bridge_ui_image": "leovct/zkevm-bridge-ui:multi-network",  # https://hub.docker.com/r/leovct/zkevm-bridge-ui/tags
-    "zkevm_contracts_image": "local/zkevm-contracts:v9.0.0-rc.6-pp-fork.12",  # https://hub.docker.com/repository/docker/leovct/zkevm-contracts/tags
+    "zkevm_contracts_image": "leovct/zkevm-contracts:v9.0.0-rc.6-pp-fork.12",  # https://hub.docker.com/repository/docker/leovct/zkevm-contracts/tags
     "zkevm_da_image": "0xpolygon/cdk-data-availability:0.0.11",  # https://hub.docker.com/r/0xpolygon/cdk-data-availability/tags
     "zkevm_node_image": "hermeznetwork/zkevm-node:v0.7.3",  # https://hub.docker.com/r/hermeznetwork/zkevm-node/tags
     "zkevm_pool_manager_image": "hermeznetwork/zkevm-pool-manager:v0.1.2",  # https://hub.docker.com/r/hermeznetwork/zkevm-pool-manager/tags
@@ -348,51 +348,51 @@ DEFAULT_ADDITIONAL_SERVICES_PARAMS = {
 }
 
 DEFAULT_ARGS = (
-    {
-        # Suffix appended to service names.
-        # Note: It should be a string.
-        "deployment_suffix": "-001",
-        # Verbosity of the `kurtosis run` output.
-        # Valid values are "error", "warn", "info", "debug", and "trace".
-        # By default, the verbosity is set to "info". It won't log the value of the args.
-        "verbosity": "info",
-        # The global log level that all components of the stack should log at.
-        # Valid values are "error", "warn", "info", "debug", and "trace".
-        "global_log_level": "info",
-        # The type of the sequencer to deploy.
-        # Options:
-        # - 'erigon': Use the new sequencer (https://github.com/0xPolygonHermez/cdk-erigon).
-        # - 'zkevm': Use the legacy sequencer (https://github.com/0xPolygonHermez/zkevm-node).
-        "sequencer_type": "erigon",
-        # The type of consensus contract to use.
-        # Options:
-        # - 'rollup': Transaction data is stored on-chain on L1.
-        # - 'cdk-validium': Transaction data is stored off-chain using the CDK DA layer and a DAC.
-        # - 'pessimistic': deploy with pessimistic consensus
-        "consensus_contract_type": "cdk-validium",
-        # Additional services to run alongside the network.
-        # Options:
-        # - arpeggio
-        # - blockscout
-        # - blutgang
-        # - erpc
-        # - pless_zkevm_node
-        # - prometheus_grafana
-        # - tx_spammer
-        # - bridge_spammer
-        "additional_services": [],
-        # Only relevant when deploying to an external L1.
-        "polygon_zkevm_explorer": "https://explorer.private/",
-        "l1_explorer_url": "https://sepolia.etherscan.io/",
-    }
-    | DEFAULT_IMAGES
-    | DEFAULT_PORTS
-    | DEFAULT_ACCOUNTS
-    | DEFAULT_L1_ARGS
-    | DEFAULT_ROLLUP_ARGS
-    | DEFAULT_PLESS_ZKEVM_NODE_ARGS
-    | DEFAULT_L2_ARGS
-    | DEFAULT_ADDITIONAL_SERVICES_PARAMS
+        {
+            # Suffix appended to service names.
+            # Note: It should be a string.
+            "deployment_suffix": "-001",
+            # Verbosity of the `kurtosis run` output.
+            # Valid values are "error", "warn", "info", "debug", and "trace".
+            # By default, the verbosity is set to "info". It won't log the value of the args.
+            "verbosity": "info",
+            # The global log level that all components of the stack should log at.
+            # Valid values are "error", "warn", "info", "debug", and "trace".
+            "global_log_level": "info",
+            # The type of the sequencer to deploy.
+            # Options:
+            # - 'erigon': Use the new sequencer (https://github.com/0xPolygonHermez/cdk-erigon).
+            # - 'zkevm': Use the legacy sequencer (https://github.com/0xPolygonHermez/zkevm-node).
+            "sequencer_type": "erigon",
+            # The type of consensus contract to use.
+            # Options:
+            # - 'rollup': Transaction data is stored on-chain on L1.
+            # - 'cdk-validium': Transaction data is stored off-chain using the CDK DA layer and a DAC.
+            # - 'pessimistic': deploy with pessimistic consensus
+            "consensus_contract_type": "cdk-validium",
+            # Additional services to run alongside the network.
+            # Options:
+            # - arpeggio
+            # - blockscout
+            # - blutgang
+            # - erpc
+            # - pless_zkevm_node
+            # - prometheus_grafana
+            # - tx_spammer
+            # - bridge_spammer
+            "additional_services": [],
+            # Only relevant when deploying to an external L1.
+            "polygon_zkevm_explorer": "https://explorer.private/",
+            "l1_explorer_url": "https://sepolia.etherscan.io/",
+        }
+        | DEFAULT_IMAGES
+        | DEFAULT_PORTS
+        | DEFAULT_ACCOUNTS
+        | DEFAULT_L1_ARGS
+        | DEFAULT_ROLLUP_ARGS
+        | DEFAULT_PLESS_ZKEVM_NODE_ARGS
+        | DEFAULT_L2_ARGS
+        | DEFAULT_ADDITIONAL_SERVICES_PARAMS
 )
 
 # https://github.com/ethpandaops/optimism-package
@@ -446,10 +446,10 @@ def parse_args(plan, user_args):
 
     # Setting mitm for each element set to true on mitm dict
     mitm_rpc_url = (
-        "http://mitm"
-        + args["deployment_suffix"]
-        + ":"
-        + str(DEFAULT_PORTS.get("mitm_port"))
+            "http://mitm"
+            + args["deployment_suffix"]
+            + ":"
+            + str(DEFAULT_PORTS.get("mitm_port"))
     )
     args["mitm_rpc_url"] = {
         k: mitm_rpc_url for k, v in args.get("mitm_proxied_components", {}).items() if v
@@ -510,11 +510,11 @@ def parse_args(plan, user_args):
 
 def validate_log_level(name, log_level):
     if log_level not in (
-        constants.LOG_LEVEL.error,
-        constants.LOG_LEVEL.warn,
-        constants.LOG_LEVEL.info,
-        constants.LOG_LEVEL.debug,
-        constants.LOG_LEVEL.trace,
+            constants.LOG_LEVEL.error,
+            constants.LOG_LEVEL.warn,
+            constants.LOG_LEVEL.info,
+            constants.LOG_LEVEL.debug,
+            constants.LOG_LEVEL.trace,
     ):
         fail(
             "Unsupported {}: '{}', please use '{}', '{}', '{}', '{}' or '{}'".format(
@@ -631,24 +631,24 @@ def set_anvil_args(plan, args, user_args):
         # We override only is user did not provide explicit values
         if not user_args.get("args", {}).get("l1_rpc_url"):
             args["l1_rpc_url"] = (
-                "http://anvil"
-                + args["deployment_suffix"]
-                + ":"
-                + str(DEFAULT_PORTS.get("anvil_port"))
+                    "http://anvil"
+                    + args["deployment_suffix"]
+                    + ":"
+                    + str(DEFAULT_PORTS.get("anvil_port"))
             )
         if not user_args.get("args", {}).get("l1_ws_url"):
             args["l1_ws_url"] = (
-                "ws://anvil"
-                + args["deployment_suffix"]
-                + ":"
-                + str(DEFAULT_PORTS.get("anvil_port"))
+                    "ws://anvil"
+                    + args["deployment_suffix"]
+                    + ":"
+                    + str(DEFAULT_PORTS.get("anvil_port"))
             )
         if not user_args.get("args", {}).get("l1_beacon_url"):
             args["l1_beacon_url"] = (
-                "http://anvil"
-                + args["deployment_suffix"]
-                + ":"
-                + str(DEFAULT_PORTS.get("anvil_port"))
+                    "http://anvil"
+                    + args["deployment_suffix"]
+                    + ":"
+                    + str(DEFAULT_PORTS.get("anvil_port"))
             )
 
 
@@ -656,8 +656,8 @@ def set_anvil_args(plan, args, user_args):
 def args_sanity_check(plan, deployment_stages, args, user_args, op_stack_args):
     # Fix the op stack el rpc urls according to the deployment_suffix.
     if (
-        args["op_el_rpc_url"]
-        != "http://op-el-1-op-geth-op-node" + args["deployment_suffix"] + ":8545"
+            args["op_el_rpc_url"]
+            != "http://op-el-1-op-geth-op-node" + args["deployment_suffix"] + ":8545"
     ):
         plan.print(
             "op_el_rpc_url is set to '{}', changing to 'http://op-el-1-op-geth-op-node{}:8545'".format(
@@ -665,12 +665,12 @@ def args_sanity_check(plan, deployment_stages, args, user_args, op_stack_args):
             )
         )
         args["op_el_rpc_url"] = (
-            "http://op-el-1-op-geth-op-node" + args["deployment_suffix"] + ":8545"
+                "http://op-el-1-op-geth-op-node" + args["deployment_suffix"] + ":8545"
         )
     # Fix the op stack cl rpc urls according to the deployment_suffix.
     if (
-        args["op_cl_rpc_url"]
-        != "http://op-cl-1-op-node-op-geth" + args["deployment_suffix"] + ":8547"
+            args["op_cl_rpc_url"]
+            != "http://op-cl-1-op-node-op-geth" + args["deployment_suffix"] + ":8547"
     ):
         plan.print(
             "op_cl_rpc_url is set to '{}', changing to 'http://op-cl-1-op-node-op-geth{}:8547'".format(
@@ -678,13 +678,13 @@ def args_sanity_check(plan, deployment_stages, args, user_args, op_stack_args):
             )
         )
         args["op_cl_rpc_url"] = (
-            "http://op-cl-1-op-node-op-geth" + args["deployment_suffix"] + ":8547"
+                "http://op-cl-1-op-node-op-geth" + args["deployment_suffix"] + ":8547"
         )
     # The optimism-package network_params is a frozen hash table, and is not modifiable during runtime.
     # The check will return fail() instead of dynamically changing the network_params name.
     if (
-        op_stack_args["optimism_package"]["chains"][0]["network_params"]["name"]
-        != args["deployment_suffix"][1:]
+            op_stack_args["optimism_package"]["chains"][0]["network_params"]["name"]
+            != args["deployment_suffix"][1:]
     ):
         fail(
             "op_stack_args network_params name is set to '{}', please change it to match deployment_suffix '{}'".format(
@@ -705,9 +705,9 @@ def args_sanity_check(plan, deployment_stages, args, user_args, op_stack_args):
 
     # Gas token enabled and gas token address check
     if (
-        not args.get("gas_token_enabled", False)
-        and args.get("gas_token_address", "0x0000000000000000000000000000000000000000")
-        != "0x0000000000000000000000000000000000000000"
+            not args.get("gas_token_enabled", False)
+            and args.get("gas_token_address", "0x0000000000000000000000000000000000000000")
+            != "0x0000000000000000000000000000000000000000"
     ):
         fail(
             "Gas token address set to '{}' but gas token is not enabled".format(
@@ -737,8 +737,8 @@ def args_sanity_check(plan, deployment_stages, args, user_args, op_stack_args):
                 "OP Succinct requires OP Rollup to be enabled. Change the deploy_optimism_rollup parameter"
             )
         if (
-            args["agglayer_prover_sp1_key"] == None
-            or args["agglayer_prover_sp1_key"] == ""
+                args["agglayer_prover_sp1_key"] == None
+                or args["agglayer_prover_sp1_key"] == ""
         ):
             fail(
                 "OP Succinct requires a valid SPN key. Change the agglayer_prover_sp1_key"
@@ -747,7 +747,7 @@ def args_sanity_check(plan, deployment_stages, args, user_args, op_stack_args):
     # OP rollup check L1 blocktime >= L2 blocktime
     if deployment_stages.get("deploy_optimism_rollup", False):
         if (
-            args.get("l1_seconds_per_slot", 12) < 2
+                args.get("l1_seconds_per_slot", 12) < 2
         ):  # 2 seconds is the default blocktime for Optimism L2.
             fail(
                 "OP Stack rollup requires L1 blocktime > 1 second. Change the l1_seconds_per_slot parameter"

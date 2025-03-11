@@ -1,4 +1,5 @@
-FROM golang:1.23.0 AS polycli-builder
+
+FROM golang:1.22 AS polycli-builder
 ARG POLYCLI_VERSION
 WORKDIR /opt/polygon-cli
 RUN git clone --branch ${POLYCLI_VERSION} https://github.com/maticnetwork/polygon-cli.git . \
@@ -12,8 +13,9 @@ LABEL description="Helper image to deploy zkevm contracts"
 # STEP 1: Download zkevm contracts dependencies and compile contracts.
 ARG ZKEVM_CONTRACTS_BRANCH
 WORKDIR /opt/zkevm-contracts
-COPY local-test-zkevm-contracts .
-RUN npm install --global npm@10.9.0 \
+RUN git clone https://github.com/0xPolygonHermez/zkevm-contracts . \
+  && git checkout ${ZKEVM_CONTRACTS_BRANCH} \
+  && npm install --global npm@10.9.0 \
   && npm install \
   && npx hardhat compile
 
