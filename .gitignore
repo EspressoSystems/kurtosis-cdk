@@ -28,3 +28,7 @@ templates/contract-deploy/dynamic-kurtosis-allocs.json
 templates/contract-deploy/dynamic-kurtosis-conf.json
 templates/contract-deploy/genesis.json
 anvil_state.json
+
+
+# Related to editing contracts guide
+docker/local-test-zkevm-contracts
